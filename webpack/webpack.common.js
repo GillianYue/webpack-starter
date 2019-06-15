@@ -2,30 +2,31 @@ const Path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+
 
 module.exports = {
-  entry: {
-    app: Path.resolve(__dirname, '../src/scripts/index.js')
-  },
+  entry: './src/app.js',
   output: {
-    path: Path.join(__dirname, '../build'),
-    filename: 'js/[name].js'
-  },
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist')
+},
   optimization: {
     splitChunks: {
       chunks: 'all',
       name: false
     }
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-    new CopyWebpackPlugin([
-      { from: Path.resolve(__dirname, '../public'), to: 'public' }
-    ]),
-    new HtmlWebpackPlugin({
-      template: Path.resolve(__dirname, '../src/index.html')
-    })
-  ],
+  devServer: {
+    contentBase: './dist',
+    overlay: true,
+    hot: true
+},
+plugins: [
+    new CopyWebpackPlugin(['./src/index.html']),
+    new webpack.HotModuleReplacementPlugin()
+],
   resolve: {
     alias: {
       '~': Path.resolve(__dirname, '../src')
@@ -47,6 +48,10 @@ module.exports = {
           }
         }
       },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/
+    }
     ]
   }
 };
